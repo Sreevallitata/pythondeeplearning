@@ -1,31 +1,28 @@
 inFile = open("sreevalli.txt",'r')
 
-ans = {}
+sree = {}
 
 line = inFile.readline()
 
 while line != "":
 
-    # lowercase the whole line so same word can count without case sensitive
 
-    line = line.strip('\n').lower()
-
-    # splitting words using split function with space parameter
+    line = line.strip('').lower()
 
     for i in line.split(' '):
 
-        if i in ans.keys():
+        if i in sree.keys():
 
-            ans[i]+=1
+            sree[i]+=1
 
         else:
 
-            ans[i]=1
+            sree[i]=1
 
     line = inFile.readline()
 
 
 
-for i in ans:
+for i in sree:
 
-    print (i,':',ans[i])
+    print (i,':',sree[i])
