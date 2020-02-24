@@ -1,42 +1,32 @@
-import numpy as np
 import pandas as pd
-train = pd.read_csv('train.csv')
-print ("Train data shape:", train.shape)
 import matplotlib.pyplot as plt
-
-var ='GarageArea'
-data = pd.concat([train['SalePrice'], train[var]], axis=1)
-plt.scatter(x=train['GarageArea'], y=train['SalePrice'])
-plt.ylabel('Sale Price')
-plt.xlabel('Above ground living area')
-plt.show()
-
 from scipy import stats
-z = np.abs(stats.zscore(data))
-print(z)
-threshold=3
-print(np.where(z>3))
+import numpy as np
 
+train = pd.read_csv('Data/train.csv')
 
-Q1 = data.quantile(0.25)
-Q3 = data.quantile(0.75)
-IQR = Q3 - Q1
-print(IQR)
-
-data = data[(z < 3).all(axis=1)]
-
-data_df_out = data[~((data < (Q1 - 1.5 * IQR)) |(data > (Q3 + 1.5 * IQR))).any(axis=1)]
-
-print(data.shape)
-print(data_df_out.shape)
-
-var ='GarageArea'
-plt.scatter(x=data['GarageArea'], y=data['SalePrice'])
+# Scatter Plot before removing outlier
+garage_area = train['GarageArea']
+sales_price = train['SalePrice']
+plt.scatter(garage_area, sales_price, alpha=.75, color='b')
+plt.xlabel('Garage Area')
 plt.ylabel('Sale Price')
-plt.xlabel('Above ground ')
+plt.title('Linear Regression Model')
 plt.show()
 
-plt.scatter(x=data_df_out['GarageArea'], y=data_df_out['SalePrice'])
+# Removing outlier by using zscore
+# Z score is the relationship between MEAN and Standard Deviation.
+data = pd.concat([train['GarageArea'], train['SalePrice']], axis=1)
+z = np.abs(stats.zscore(data))
+threshold = 3
+data = data[(z < 3).all(axis=1)]
+print(data)
+
+# Scatter Plot after removing outlier
+garage_area = data['GarageArea']
+sales_price = data['SalePrice']
+plt.scatter(garage_area, sales_price, alpha=.75, color='b')
+plt.xlabel('Garage Area')
 plt.ylabel('Sale Price')
-plt.xlabel('Above ground ')
+plt.title('Linear Regression Model')
 plt.show()

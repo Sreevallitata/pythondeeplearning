@@ -1,22 +1,37 @@
 import pandas as pd
 import numpy as np
+
 from sklearn import linear_model
-from sklearn.metrics import mean_squared_error, r2_score
-dataset = pd.read_csv('winequality-red.csv')
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
 
-print('The total null values in the dataset are ',dataset.isnull().sum().sum())
+train = pd.read_csv('Data/winequality-red.csv')
 
-X=dataset.drop(['quality'],axis=1)
-Y=dataset[['quality']]
+# Handling missing value
+data = train.select_dtypes(include=[np.number]).interpolate().dropna()
 
-regr = linear_model.LinearRegression()
-regr.fit(X, Y)
+# Top 3 correlation
+data_correlation = data.corr(method='pearson')['quality'][:]
+sorted_data = data_correlation.sort_values(kind='quicksort', ascending=False)
+print("Descending order")
+print(sorted_data[0:3])
+print("-------------------------")
+sorted_data = data_correlation.sort_values(kind='quicksort', ascending=True)
+print("Ascending order")
+print(sorted_data[0:3])
+print("-------------------------")
 
-y_pred = regr.predict(X)
+target_data = train.quality
+features_data = data.drop(['quality'], axis=1)
 
-print("Variance score: %.2f" % r2_score(Y,y_pred))
-print("Mean squared error: %.2f" % mean_squared_error(Y,y_pred))
-numeric_features = dataset.select_dtypes(include=[np.number])
-corr = numeric_features.corr()
-print('Top 3 correlated variables to the target variable quality is: ')
-print(corr['quality'].sort_values(ascending=False)[:3],'\n')
+features_train, features_test, target_train, target_test = train_test_split(features_data, target_data, random_state=42, test_size=.33)
+
+
+lr = linear_model.LinearRegression()
+model = lr.fit(features_train, target_train)
+
+# Evaluate the performance
+print("R^2 is: \n", model.score(features_test, target_test))
+predictions = model.predict(features_test)
+
+print('RMSE is: \n', mean_squared_error(target_test, predictions))
